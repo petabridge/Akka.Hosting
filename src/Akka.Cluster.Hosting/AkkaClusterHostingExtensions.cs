@@ -1229,7 +1229,7 @@ namespace Akka.Cluster.Hosting
 
                 options ??= new ClusterSingletonOptions();
                 var clusterSingletonManagerSettings =
-                    ClusterSingletonManagerSettings.Create(system).WithSingletonName(singletonName);
+                    ClusterSingletonManagerSettings.Create(system);
 
                 if (options.LeaseImplementation is not null)
                 {
@@ -1239,7 +1239,7 @@ namespace Akka.Cluster.Hosting
                 }
 
                 var singletonProxySettings =
-                    ClusterSingletonProxySettings.Create(system).WithSingletonName(singletonName);
+                    ClusterSingletonProxySettings.Create(system);
 
                 if (!string.IsNullOrEmpty(options.Role))
                 {
@@ -1365,7 +1365,7 @@ namespace Akka.Cluster.Hosting
                 options ??= new ClusterSingletonOptions();
 
                 var singletonProxySettings =
-                    ClusterSingletonProxySettings.Create(system).WithSingletonName(singletonName);
+                    ClusterSingletonProxySettings.Create(system);
 
                 if (!string.IsNullOrEmpty(options.Role))
                 {
