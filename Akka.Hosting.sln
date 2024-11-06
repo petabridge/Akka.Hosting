@@ -9,11 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Hosting.Tests", "src\A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Hosting.Tests.Performance", "src\Akka.Hosting.Tests.Performance\Akka.Hosting.Tests.Performance.csproj", "{F7035FC5-8658-42AC-9317-749CC089C262}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2B9D74C1-4148-46EF-B3FE-7357839FAF40}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2B9D74C1-4148-46EF-B3FE-7357839FAF40}"
 	ProjectSection(SolutionItems) = preProject
-		src\Directory.Build.props = src\Directory.Build.props
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
+		global.json = global.json
+		nuget.config = nuget.config
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Hosting.SimpleDemo", "src\Examples\Akka.Hosting.SimpleDemo\Akka.Hosting.SimpleDemo.csproj", "{5F6A7BE8-6906-46CE-BA1C-72EA11EFA33B}"
