@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
+using Akka.DistributedData;
 using Akka.Hosting;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,17 +45,19 @@ public class DDataOptionsSpecs
     public async Task Should_not_emit_durable_keys_when_empty(DDataOptions options)
     {
         // arrange
-        using var host = await TestHelper.CreateHost(builder => { builder.WithDistributedData(options); },
+        using var host = await TestHelper.CreateHost(builder =>
+            {
+                builder
+                    .WithDistributedData(options);
+            },
             new ClusterOptions() { Roles = new[] { "my-host" } }, Output);
 
         var actorSystem = host.Services.GetRequiredService<ActorSystem>();
 
         // act
-        var config = actorSystem.Settings.Config.GetConfig("akka.cluster.distributed-data");
+        var ddataSettings = ReplicatorSettings.Create(actorSystem); // parse the settings
 
         // assert
-        Assert.True(config.HasPath("durable.keys"));
-        var keys = config.GetStringList("durable.keys");
-        Assert.Empty(keys);
+        ddataSettings.DurableKeys.Should().BeEmpty();
     }
 }
