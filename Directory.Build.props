@@ -23,7 +23,7 @@
     <TestSdkVersion>17.11.1</TestSdkVersion>
     <CoverletVersion>6.0.2</CoverletVersion>
     <XunitRunneVisualstudio>2.8.1</XunitRunneVisualstudio>
-    <AkkaVersion>1.5.30</AkkaVersion>
+    <AkkaVersion>1.5.31</AkkaVersion>
     <MicrosoftExtensionsVersion>[6.0.0,)</MicrosoftExtensionsVersion>
   </PropertyGroup>
   <!-- SourceLink support for all Akka.NET projects -->
