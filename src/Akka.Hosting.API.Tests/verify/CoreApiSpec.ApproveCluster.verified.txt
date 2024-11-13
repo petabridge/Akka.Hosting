@@ -34,6 +34,9 @@ namespace Akka.Cluster.Hosting
         public static Akka.Hosting.AkkaConfigurationBuilder WithShardedDaemonProcessProxy<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string name, int numberOfInstances, string role) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonName, Akka.Actor.Props actorProps, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonName, System.Func<Akka.Actor.ActorSystem, Akka.Hosting.IActorRegistry, Akka.DependencyInjection.IDependencyResolver, Akka.Actor.Props> propsFactory, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
+        public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonManagerName, string singletonName, Akka.Actor.Props actorProps, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
+        public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonManagerName, string singletonName, System.Func<Akka.Actor.ActorSystem, Akka.Hosting.IActorRegistry, Akka.DependencyInjection.IDependencyResolver, Akka.Actor.Props> propsFactory, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
+        public static Akka.Hosting.AkkaConfigurationBuilder WithSingletonProxy<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonManagerName, string singletonName, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingletonProxy<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonName, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, string? singletonManagerPath = null) { }
     }
     public sealed class ClusterClientDiscoveryOptions
@@ -75,7 +78,10 @@ namespace Akka.Cluster.Hosting
         public int? BufferSize { get; set; }
         public Akka.Hosting.Coordination.LeaseOptionBase? LeaseImplementation { get; set; }
         public System.TimeSpan? LeaseRetryInterval { get; set; }
+        public bool? LogSingletonIdentificationFailure { get; set; }
         public string? Role { get; set; }
+        public System.TimeSpan? SingletonIdentificationFailurePeriod { get; set; }
+        public System.TimeSpan? SingletonIdentificationInterval { get; set; }
         public object? TerminationMessage { get; set; }
     }
     public class DDataOptions

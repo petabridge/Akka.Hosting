@@ -160,6 +160,53 @@ namespace Akka.Cluster.Hosting
         /// The interval between retries for acquiring the lease
         /// </summary>
         public TimeSpan? LeaseRetryInterval { get; set; }
+
+        /// <summary>
+        /// Interval at which the proxy will try to resolve the singleton instance.
+        /// </summary>
+        public TimeSpan? SingletonIdentificationInterval { get; set; }
+        
+        /// <summary>
+        /// Should the singleton proxy publish a warning if no singleton actor were found after a period of time
+        /// </summary>
+        public bool? LogSingletonIdentificationFailure { get; set; }
+        
+        /// <summary>
+        /// The period the proxy will wait until it logs a missing singleton warning, defaults to 1 minute
+        /// </summary>
+        public TimeSpan? SingletonIdentificationFailurePeriod { get; set; }
+        
+        internal ClusterSingletonManagerSettings ToManagerSettings(string singletonName, ActorSystem system)
+        {
+            var settings = ClusterSingletonManagerSettings.Create(system);
+            
+            var retry = LeaseRetryInterval ?? system.Settings.Config.GetTimeSpan("akka.cluster.singleton.lease-retry-interval");
+            var leaseSettings = LeaseImplementation is not null
+                ? new LeaseUsageSettings(LeaseImplementation.ConfigPath, retry)
+                : null;
+
+            return new ClusterSingletonManagerSettings(
+                singletonName: singletonName,
+                role: Role ?? settings.Role,
+                removalMargin: settings.RemovalMargin,
+                handOverRetryInterval: settings.HandOverRetryInterval,
+                leaseSettings: leaseSettings ?? settings.LeaseSettings,
+                considerAppVersion: false);
+        }
+        
+        internal ClusterSingletonProxySettings ToProxySettings(string singletonName, ActorSystem system)
+        {
+            var settings = ClusterSingletonProxySettings.Create(system);
+            return new ClusterSingletonProxySettings(
+                singletonName: singletonName, 
+                role: Role ?? settings.Role, 
+                singletonIdentificationInterval: SingletonIdentificationInterval ?? settings.SingletonIdentificationInterval, 
+                bufferSize: BufferSize ?? settings.BufferSize, 
+                considerAppVersion: settings.ConsiderAppVersion,
+                logSingletonIdentificationFailure: LogSingletonIdentificationFailure ?? settings.LogSingletonIdentificationFailure,
+                singletonIdentificationFailurePeriod: SingletonIdentificationFailurePeriod ?? settings.SingletonIdentificationFailurePeriod);
+        }
+
     }
 
     public sealed class ShardOptions
@@ -1183,12 +1230,22 @@ namespace Akka.Cluster.Hosting
 
         /// <summary>
         ///     <para>
-        ///         Creates a new <see cref="ClusterSingletonManager"/> to host an actor created via <see cref="actorProps"/>.
+        ///         Creates a new <see cref="ClusterSingletonManager"/> to host an actor created via <see cref="propsFactory"/>.
         ///     </para>
         ///
         ///     If <paramref name="createProxyToo"/> is set to <c>true</c> then this method will also create a
         ///     <see cref="ClusterSingletonProxy"/> that will be added to the <see cref="ActorRegistry"/> using the key
-        ///     <see cref="TKey"/>. Otherwise this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <see cref="TKey"/>. Otherwise, this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <list type="bullet">
+        ///         <item>
+        ///             The complete singleton manager actor path name will be
+        ///             <c>akka://MyActorSystem/user/singletonName/singletonName</c>
+        ///         </item>
+        ///         <item>
+        ///             The complete singleton proxy actor path name, if created, will be
+        ///             <c>akka://MyActorSystem/user/singletonName-proxy</c>
+        ///         </item>
+        ///     </list>
         /// </summary>
         /// <param name="builder">
         ///     The builder instance being configured.
@@ -1196,7 +1253,7 @@ namespace Akka.Cluster.Hosting
         /// <param name="singletonName">
         ///     The name of this singleton instance. Will also be used in the <see cref="ActorPath"/> for the
         ///     <see cref="ClusterSingletonManager"/> and optionally, the <see cref="ClusterSingletonProxy"/> created
-        ///     by this method.
+        ///     by this method. See summary above.
         /// </param>
         /// <param name="propsFactory">
         ///     A function that accepts the <see cref="ActorSystem"/>, <see cref="ActorRegistry"/>, and <see cref="IDependencyResolver"/>
@@ -1222,49 +1279,89 @@ namespace Akka.Cluster.Hosting
             Func<ActorSystem, IActorRegistry, IDependencyResolver, Props> propsFactory,
             ClusterSingletonOptions? options = null,
             bool createProxyToo = true)
+            => builder.WithSingleton<TKey>(singletonName, singletonName, propsFactory, options, createProxyToo);
+
+        /// <summary>
+        ///     <para>
+        ///         Creates a new <see cref="ClusterSingletonManager"/> to host an actor created via <see cref="propsFactory"/>.
+        ///     </para>
+        ///     If <paramref name="createProxyToo"/> is set to <c>true</c> then this method will also create a
+        ///     <see cref="ClusterSingletonProxy"/> that will be added to the <see cref="ActorRegistry"/> using the key
+        ///     <see cref="TKey"/>. Otherwise, this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <list type="bullet">
+        ///         <item>
+        ///             The complete singleton manager actor path name will be
+        ///             <c>akka://MyActorSystem/user/singletonManagerName/singletonName</c>
+        ///         </item>
+        ///         <item>
+        ///             The complete singleton proxy actor path name, if created, will be
+        ///             <c>akka://MyActorSystem/user/singletonName-proxy</c>
+        ///         </item>
+        ///     </list>
+        /// </summary>
+        /// <param name="builder">
+        ///     The builder instance being configured.
+        /// </param>
+        /// <param name="singletonManagerName">
+        ///     The name of the <see cref="ClusterSingletonManager"/> created by this method. See summary above.
+        /// </param>
+        /// <param name="singletonName">
+        ///     The name of this singleton instance and optionally, part of the <see cref="ClusterSingletonProxy"/>
+        ///     name created by this method. See summary above.
+        /// </param>
+        /// <param name="propsFactory">
+        ///     A function that accepts the <see cref="ActorSystem"/>, <see cref="ActorRegistry"/>, and <see cref="IDependencyResolver"/>
+        ///     and returns the <see cref="Props"/> for the actor
+        /// </param>
+        /// <param name="options">
+        ///     Optional. The set of options for configuring both the <see cref="ClusterSingletonManager"/> and
+        ///     optionally, the <see cref="ClusterSingletonProxy"/>.
+        /// </param>
+        /// <param name="createProxyToo">
+        ///     When set to <c>true></c>, creates a <see cref="ClusterSingletonProxy"/> that automatically points to
+        ///     the <see cref="ClusterSingletonManager"/> created by this method.
+        /// </param>
+        /// <typeparam name="TKey">
+        ///     The key type to use for the <see cref="ActorRegistry"/> when <paramref name="createProxyToo"/> is set to <c>true</c>.
+        /// </typeparam>
+        /// <returns>
+        ///     The same <see cref="AkkaConfigurationBuilder"/> instance originally passed in.
+        /// </returns>
+        public static AkkaConfigurationBuilder WithSingleton<TKey>(
+            this AkkaConfigurationBuilder builder,
+            string singletonManagerName,
+            string singletonName,
+            Func<ActorSystem, IActorRegistry, IDependencyResolver, Props> propsFactory,
+            ClusterSingletonOptions? options = null,
+            bool createProxyToo = true)
         {
+            // make sure that default configuration is loaded, not an exhaustive check.
+            if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton"))
+            {
+                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+            }
+            
             return builder.WithActors((system, registry, resolver) =>
             {
                 var actorProps = propsFactory(system, registry, resolver);
 
                 options ??= new ClusterSingletonOptions();
-                var clusterSingletonManagerSettings =
-                    ClusterSingletonManagerSettings.Create(system).WithSingletonName(singletonName);
-
-                if (options.LeaseImplementation is not null)
-                {
-                    var retry = options.LeaseRetryInterval ?? TimeSpan.FromSeconds(5);
-                    clusterSingletonManagerSettings = clusterSingletonManagerSettings
-                        .WithLeaseSettings(new LeaseUsageSettings(options.LeaseImplementation.ConfigPath, retry));
-                }
-
-                var singletonProxySettings =
-                    ClusterSingletonProxySettings.Create(system).WithSingletonName(singletonName);
-
-                if (!string.IsNullOrEmpty(options.Role))
-                {
-                    clusterSingletonManagerSettings = clusterSingletonManagerSettings.WithRole(options.Role);
-                    singletonProxySettings = singletonProxySettings.WithRole(options.Role);
-                }
+                var clusterSingletonManagerSettings = options.ToManagerSettings(singletonName, system);
 
                 var singletonProps = options.TerminationMessage == null
                     ? ClusterSingletonManager.Props(actorProps, clusterSingletonManagerSettings)
                     : ClusterSingletonManager.Props(actorProps, options.TerminationMessage,
                         clusterSingletonManagerSettings);
 
-                var singletonManagerRef = system.ActorOf(singletonProps, singletonName);
+                var singletonManagerRef = system.ActorOf(singletonProps, singletonManagerName);
 
                 // create a proxy that can talk to the singleton we just created
                 // and add it to the ActorRegistry
                 if (createProxyToo)
                 {
-                    if (options.BufferSize != null)
-                    {
-                        singletonProxySettings = singletonProxySettings.WithBufferSize(options.BufferSize.Value);
-                    }
-
-                    CreateAndRegisterSingletonProxy<TKey>(singletonManagerRef.Path.Name,
-                        $"/user/{singletonManagerRef.Path.Name}", singletonProxySettings, system, registry);
+                    var singletonProxySettings = options.ToProxySettings(singletonName, system);
+                    CreateAndRegisterSingletonProxy<TKey>(singletonName,
+                        $"/user/{singletonManagerName}", singletonProxySettings, system, registry);
                 }
             });
         }
@@ -1276,7 +1373,75 @@ namespace Akka.Cluster.Hosting
         ///
         ///     If <paramref name="createProxyToo"/> is set to <c>true</c> then this method will also create a
         ///     <see cref="ClusterSingletonProxy"/> that will be added to the <see cref="ActorRegistry"/> using the key
-        ///     <see cref="TKey"/>. Otherwise this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <see cref="TKey"/>. Otherwise, this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <list type="bullet">
+        ///         <item>
+        ///             The complete singleton manager actor path name will be
+        ///             <c>akka://MyActorSystem/user/singletonManagerName/singletonName</c>
+        ///         </item>
+        ///         <item>
+        ///             The complete singleton proxy actor path name, if created, will be
+        ///             <c>akka://MyActorSystem/user/singletonName-proxy</c>
+        ///         </item>
+        ///     </list>
+        /// </summary>
+        /// <param name="builder">
+        ///     The builder instance being configured.
+        /// </param>
+        /// <param name="singletonManagerName">
+        ///     The name of the <see cref="ClusterSingletonManager"/> created by this method. See summary above.
+        /// </param>
+        /// <param name="singletonName">
+        ///     The name of this singleton instance and optionally, part of the <see cref="ClusterSingletonProxy"/>
+        ///     name created by this method. See summary above.
+        /// </param>
+        /// <param name="actorProps">
+        ///     The underlying actor type. SHOULD NOT BE CREATED USING <see cref="Props"/>
+        /// </param>
+        /// <param name="options">
+        ///     Optional. The set of options for configuring both the <see cref="ClusterSingletonManager"/> and
+        ///     optionally, the <see cref="ClusterSingletonProxy"/>.
+        /// </param>
+        /// <param name="createProxyToo">
+        ///     When set to <c>true></c>, creates a <see cref="ClusterSingletonProxy"/> that automatically points to
+        ///     the <see cref="ClusterSingletonManager"/> created by this method.
+        /// </param>
+        /// <typeparam name="TKey">
+        ///     The key type to use for the <see cref="ActorRegistry"/> when <paramref name="createProxyToo"/> is set to <c>true</c>.
+        /// </typeparam>
+        /// <returns>
+        ///     The same <see cref="AkkaConfigurationBuilder"/> instance originally passed in.
+        /// </returns>
+        public static AkkaConfigurationBuilder WithSingleton<TKey>(
+            this AkkaConfigurationBuilder builder,
+            string singletonManagerName,
+            string singletonName,
+            Props actorProps,
+            ClusterSingletonOptions? options = null,
+            bool createProxyToo = true)
+        {
+            return builder.WithSingleton<TKey>(singletonManagerName, singletonName, (_, _, _) => actorProps, options,
+                createProxyToo);
+        }
+
+        /// <summary>
+        ///     <para>
+        ///         Creates a new <see cref="ClusterSingletonManager"/> to host an actor created via <see cref="actorProps"/>.
+        ///     </para>
+        ///
+        ///     If <paramref name="createProxyToo"/> is set to <c>true</c> then this method will also create a
+        ///     <see cref="ClusterSingletonProxy"/> that will be added to the <see cref="ActorRegistry"/> using the key
+        ///     <see cref="TKey"/>. Otherwise, this method will register nothing with the <see cref="ActorRegistry"/>.
+        ///     <list type="bullet">
+        ///         <item>
+        ///             The complete singleton manager actor path name will be
+        ///             <c>akka://MyActorSystem/user/singletonName/singletonName</c>
+        ///         </item>
+        ///         <item>
+        ///             The complete singleton proxy actor path name, if created, will be
+        ///             <c>akka://MyActorSystem/user/singletonName-proxy</c>
+        ///         </item>
+        ///     </list>
         /// </summary>
         /// <param name="builder">
         ///     The builder instance being configured.
@@ -1284,7 +1449,7 @@ namespace Akka.Cluster.Hosting
         /// <param name="singletonName">
         ///     The name of this singleton instance. Will also be used in the <see cref="ActorPath"/> for the
         ///     <see cref="ClusterSingletonManager"/> and optionally, the <see cref="ClusterSingletonProxy"/> created
-        ///     by this method.
+        ///     by this method. See summary above.
         /// </param>
         /// <param name="actorProps">
         ///     The underlying actor type. SHOULD NOT BE CREATED USING <see cref="Props"/>
@@ -1310,42 +1475,101 @@ namespace Akka.Cluster.Hosting
             ClusterSingletonOptions? options = null,
             bool createProxyToo = true)
         {
-            return builder.WithSingleton<TKey>(singletonName, (_, _, _) => actorProps, options,
+            return builder.WithSingleton<TKey>(singletonName, singletonName, (_, _, _) => actorProps, options,
                 createProxyToo);
         }
 
         private static void CreateAndRegisterSingletonProxy<TKey>(
-            string singletonActorName,
-            string singletonActorPath,
+            string singletonName,
+            string singletonManagerActorPath,
             ClusterSingletonProxySettings singletonProxySettings,
             ActorSystem system,
             IActorRegistry registry)
         {
-            var singletonProxyProps = ClusterSingletonProxy.Props(singletonActorPath,
-                singletonProxySettings);
-            var singletonProxy = system.ActorOf(singletonProxyProps, $"{singletonActorName}-proxy");
+            var singletonProxyProps = ClusterSingletonProxy.Props(
+                singletonManagerPath: singletonManagerActorPath,
+                settings: singletonProxySettings);
+            var singletonProxy = system.ActorOf(singletonProxyProps, $"{singletonName}-proxy");
 
             registry.Register<TKey>(singletonProxy);
         }
 
         /// <summary>
-        ///     Creates a <see cref="ClusterSingletonProxy"/> and adds it to the <see cref="ActorRegistry"/> using the
-        ///     given <see cref="TKey"/>.
+        ///     <para>
+        ///         Creates a <see cref="ClusterSingletonProxy"/> and adds it to the <see cref="ActorRegistry"/> using
+        ///         the given <see cref="TKey"/>.
+        ///     </para>
+        /// 
+        ///     The complete singleton proxy actor path name will be <c>akka://MyActorSystem/user/singletonName-proxy</c>
+        /// </summary>
+        /// <param name="builder">
+        ///     The builder instance being configured.
+        /// </param>
+        /// <param name="singletonManagerName">
+        ///     The name of the singleton manager.
+        /// </param>
+        /// <param name="singletonName">
+        ///     The name of the singleton. Will also be part of the <see cref="ClusterSingletonProxy"/> created
+        ///     by this method. See summary above.
+        /// </param>
+        /// <param name="options">
+        ///     Optional. The set of options for configuring the <see cref="ClusterSingletonProxy"/>.
+        /// </param>
+        /// <typeparam name="TKey">
+        ///     The key type to use for the <see cref="ActorRegistry"/>.
+        /// </typeparam>
+        /// <returns>
+        ///     The same <see cref="AkkaConfigurationBuilder"/> instance originally passed in.
+        /// </returns>
+        public static AkkaConfigurationBuilder WithSingletonProxy<TKey>(
+            this AkkaConfigurationBuilder builder,
+            string singletonManagerName,
+            string singletonName,
+            ClusterSingletonOptions? options = null)
+        {
+            // make sure that default configuration is loaded, not an exhaustive check.
+            if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton-proxy"))
+            {
+                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+            }
+            
+            return builder.WithActors((system, registry) =>
+            {
+                options ??= new ClusterSingletonOptions();
+                var singletonProxySettings = options.ToProxySettings(singletonName, system);
+
+                var singletonManagerPath = $"/user/{singletonManagerName}";
+
+                CreateAndRegisterSingletonProxy<TKey>(
+                    singletonName: singletonName,
+                    singletonManagerActorPath: singletonManagerPath,
+                    singletonProxySettings: singletonProxySettings,
+                    system: system,
+                    registry: registry);
+            });
+
+        }
+        
+        /// <summary>
+        ///     <para>
+        ///         Creates a <see cref="ClusterSingletonProxy"/> and adds it to the <see cref="ActorRegistry"/> using
+        ///         the given <see cref="TKey"/>.
+        ///     </para>
+        /// 
+        ///     The complete singleton proxy actor path name will be <c>akka://MyActorSystem/user/singletonName-proxy</c>
         /// </summary>
         /// <param name="builder">
         ///     The builder instance being configured.
         /// </param>
         /// <param name="singletonName">
-        ///     The name of this singleton instance. Will also be used in the <see cref="ActorPath"/> for the
-        ///     <see cref="ClusterSingletonManager"/> and optionally, the <see cref="ClusterSingletonProxy"/> created
-        ///     by this method.
+        ///     The name of the singleton. Will also be part of the <see cref="ClusterSingletonProxy"/> created by this method.
         /// </param>
         /// <param name="options">
         ///     Optional. The set of options for configuring the <see cref="ClusterSingletonProxy"/>.
         /// </param>
         /// <param name="singletonManagerPath">
-        ///     Optional. By default Akka.Hosting will assume the <see cref="ClusterSingletonManager"/> is hosted at
-        ///     "/user/{singletonName}" - but if for some reason the path is different you can use this property to
+        ///     Optional. By default, Akka.Hosting will assume the <see cref="ClusterSingletonManager"/> is hosted at
+        ///     "/user/{singletonManagerName}" - but if for some reason the path is different you can use this property to
         ///     override that value.
         /// </param>
         /// <typeparam name="TKey">
@@ -1360,27 +1584,25 @@ namespace Akka.Cluster.Hosting
             ClusterSingletonOptions? options = null,
             string? singletonManagerPath = null)
         {
+            // make sure that default configuration is loaded, not an exhaustive check.
+            if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton-proxy"))
+            {
+                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+            }
+            
             return builder.WithActors((system, registry) =>
             {
                 options ??= new ClusterSingletonOptions();
-
-                var singletonProxySettings =
-                    ClusterSingletonProxySettings.Create(system).WithSingletonName(singletonName);
-
-                if (!string.IsNullOrEmpty(options.Role))
-                {
-                    singletonProxySettings = singletonProxySettings.WithRole(options.Role);
-                }
-
-                if (options.BufferSize != null)
-                {
-                    singletonProxySettings = singletonProxySettings.WithBufferSize(options.BufferSize.Value);
-                }
+                var singletonProxySettings = options.ToProxySettings(singletonName, system);
 
                 singletonManagerPath ??= $"/user/{singletonName}";
 
-                CreateAndRegisterSingletonProxy<TKey>(singletonName, singletonManagerPath, singletonProxySettings,
-                    system, registry);
+                CreateAndRegisterSingletonProxy<TKey>(
+                    singletonName: singletonName,
+                    singletonManagerActorPath: singletonManagerPath,
+                    singletonProxySettings: singletonProxySettings,
+                    system: system,
+                    registry: registry);
             });
         }
 
