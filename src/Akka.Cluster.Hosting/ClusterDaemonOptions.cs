@@ -12,10 +12,10 @@ public sealed class ClusterDaemonOptions
     public string? Role { get; set; }
     public object? HandoffStopMessage { get; set; }
 
-    internal Config? ToHocon()
+    internal Config ToHocon()
     {
         return KeepAliveInterval is not null 
             ? $"akka.cluster.sharded-daemon-process.keep-alive-interval = {KeepAliveInterval.ToHocon()}" 
-            : null;
+            : Config.Empty;
     }
 }
