@@ -5,6 +5,8 @@
 
   <ItemGroup>
     <PackageReference Include="Akka.Logger.Serilog" Version="1.5.25" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageReference Include="Akka.TestKit.Xunit2" Version="$(AkkaVersion)" />
