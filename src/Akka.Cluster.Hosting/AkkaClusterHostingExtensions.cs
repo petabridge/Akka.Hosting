@@ -333,7 +333,8 @@ namespace Akka.Cluster.Hosting
         ///     <see cref="Akka.Cluster.Sharding.StateStoreMode.DData"/>
         /// </summary>
         [Obsolete("This property is not being applied to the ActorSystem anymore. " +
-                  "Use manual HOCON configuration to set \"akka.cluster.sharding.distributed-data\" values. " +
+                  "Use `WithShardingDistributedData()` extension method or set them using manual HOCON " +
+                  "configuration to set \"akka.cluster.sharding.distributed-data\" values. " +
                   "Since v1.5.27")]
         public ShardingDDataOptions DistributedData { get; } = new();
 
@@ -693,6 +694,53 @@ namespace Akka.Cluster.Hosting
             return builder;
         }
 
+        /// <summary>
+        ///     Configure the global sharding distributed data settings. This settings will only be used when ShardOptions.StateStoreMode.
+        /// </summary>
+        /// <param name="builder">
+        ///     The builder instance being configured.
+        /// </param>
+        /// <param name="configure">
+        ///     Configuration method for configuring the <see cref="ShardingDDataOptions"/>
+        /// </param>
+        /// <returns>
+        ///     The same <see cref="AkkaConfigurationBuilder"/> instance originally passed in.
+        /// </returns>
+        public static AkkaConfigurationBuilder WithShardingDistributedData(
+            this AkkaConfigurationBuilder builder,
+            Action<ShardingDDataOptions> configure)
+        {
+            var options = new ShardingDDataOptions();
+            configure(options);
+            return builder.WithShardingDistributedData(options);
+        }
+
+        /// <summary>
+        ///     Configure the global sharding distributed data settings
+        /// </summary>
+        /// <param name="builder">
+        ///     The builder instance being configured.
+        /// </param>
+        /// <param name="options">
+        ///     The <see cref="ShardingDDataOptions"/> that will be used to configure cluster sharding
+        ///     global distributed data settings
+        /// </param>
+        /// <returns>
+        ///     The same <see cref="AkkaConfigurationBuilder"/> instance originally passed in.
+        /// </returns>
+        public static AkkaConfigurationBuilder WithShardingDistributedData(
+            this AkkaConfigurationBuilder builder,
+            ShardingDDataOptions options)
+        {
+            options.Apply(builder);
+            
+            var dDataSettings = DistributedData.DistributedData.DefaultConfig()
+                .MoveTo("akka.cluster.sharding.distributed-data");
+            builder.AddHocon(dDataSettings, HoconAddMode.Append);
+            
+            return builder;
+        }
+        
         /// <summary>
         ///     Starts a <see cref="ShardRegion"/> actor for the given entity <see cref="typeName"/>
         ///     and registers the ShardRegion <see cref="IActorRef"/> with <see cref="TKey"/> in the

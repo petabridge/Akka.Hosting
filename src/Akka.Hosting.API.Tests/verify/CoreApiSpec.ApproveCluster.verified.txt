@@ -32,6 +32,8 @@ namespace Akka.Cluster.Hosting
         public static Akka.Hosting.AkkaConfigurationBuilder WithShardRegionProxy<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string typeName, string roleName, Akka.Cluster.Sharding.ExtractEntityId extractEntityId, Akka.Cluster.Sharding.ExtractShardId extractShardId) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithShardedDaemonProcess<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string name, int numberOfInstances, System.Func<Akka.Actor.ActorSystem, Akka.Hosting.IActorRegistry, Akka.DependencyInjection.IDependencyResolver, System.Func<int, Akka.Actor.Props>> entityPropsFactory, Akka.Cluster.Hosting.ClusterDaemonOptions? options = null) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithShardedDaemonProcessProxy<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string name, int numberOfInstances, string role) { }
+        public static Akka.Hosting.AkkaConfigurationBuilder WithShardingDistributedData(this Akka.Hosting.AkkaConfigurationBuilder builder, Akka.Cluster.Hosting.ShardingDDataOptions options) { }
+        public static Akka.Hosting.AkkaConfigurationBuilder WithShardingDistributedData(this Akka.Hosting.AkkaConfigurationBuilder builder, System.Action<Akka.Cluster.Hosting.ShardingDDataOptions> configure) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonName, Akka.Actor.Props actorProps, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonName, System.Func<Akka.Actor.ActorSystem, Akka.Hosting.IActorRegistry, Akka.DependencyInjection.IDependencyResolver, Akka.Actor.Props> propsFactory, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
         public static Akka.Hosting.AkkaConfigurationBuilder WithSingleton<TKey>(this Akka.Hosting.AkkaConfigurationBuilder builder, string singletonManagerName, string singletonName, Akka.Actor.Props actorProps, Akka.Cluster.Hosting.ClusterSingletonOptions? options = null, bool createProxyToo = true) { }
@@ -110,9 +112,9 @@ namespace Akka.Cluster.Hosting
     public sealed class ShardOptions
     {
         public ShardOptions() { }
-        [System.Obsolete("This property is not being applied to the ActorSystem anymore. Use manual HOCON c" +
-            "onfiguration to set \"akka.cluster.sharding.distributed-data\" values. Since v1.5." +
-            "27")]
+        [System.Obsolete("This property is not being applied to the ActorSystem anymore. Use `WithShardingD" +
+            "istributedData()` extension method or set them using manual HOCON configuration " +
+            "to set \"akka.cluster.sharding.distributed-data\" values. Since v1.5.27")]
         public Akka.Cluster.Hosting.ShardingDDataOptions DistributedData { get; }
         public bool? FailOnInvalidEntityStateTransition { get; set; }
         public object? HandOffStopMessage { get; set; }
