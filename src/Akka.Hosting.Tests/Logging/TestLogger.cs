@@ -36,8 +36,8 @@ public class TestLogger : ILogger
         _stopsWhen = message;
     }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-        Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception?, string> formatter)
     {
         var message = formatter(state, exception);
         _helper.WriteLine($"[{logLevel}] {message}");
@@ -90,7 +90,9 @@ public class EmptyDisposable : IDisposable
     {
     }
 
+#pragma warning disable CA1816
     public void Dispose()
+#pragma warning restore CA1816
     {
     }
 }
