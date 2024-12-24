@@ -6,13 +6,14 @@
     <PackageReleaseNotes>* [Fix ActorRegistry.GetAsync() returning Nobody](https://github.com/akkadotnet/Akka.Hosting/pull/501)</PackageReleaseNotes>
     <PackageIcon>akkalogo.png</PackageIcon>
     <PackageProjectUrl>
-            https://github.com/akkadotnet/Akka.Hosting
-        </PackageProjectUrl>
+      https://github.com/akkadotnet/Akka.Hosting
+    </PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
