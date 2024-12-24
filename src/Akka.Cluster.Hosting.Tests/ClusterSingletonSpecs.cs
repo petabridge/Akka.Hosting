@@ -75,10 +75,17 @@ public class ClusterSingletonSpecs
         var expectedSingletonPath = new RootActorPath(address) / "user" / "my-singleton" / "my-singleton";
         var singletonSelector = system.ActorSelection(expectedSingletonPath);
 
+        var startTime = DateTime.UtcNow;
+        var timeout = TimeSpan.FromSeconds(3);
+
         await Awaiting(async () =>
         {
-            var identify = await singletonSelector.ResolveOne(3.Seconds());
-            identify.Should().NotBe(ActorRefs.Nobody);
+            // might take multiple tries to resolve the singleton if it hasn't been created yet
+            while (DateTime.UtcNow - startTime < timeout)
+            {
+                var identify = await singletonSelector.ResolveOne(100.Milliseconds());
+                identify.Should().NotBe(ActorRefs.Nobody);
+            }
         }).Should().NotThrowAsync();
 
         singletonProxy.Path.ToString().Should().Be("akka://TestSys/user/my-singleton-proxy");
