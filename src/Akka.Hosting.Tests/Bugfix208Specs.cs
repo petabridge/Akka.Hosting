@@ -89,7 +89,7 @@ public class Bugfix208Specs : TestKit.TestKit
                 var r = await testActorRef.Ask<string>(new MyTestActor.GetData(), TimeSpan.FromMilliseconds(100));
                 r.Should().Be("BackgroundService started");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 attempts--;
                 if (attempts == 0)

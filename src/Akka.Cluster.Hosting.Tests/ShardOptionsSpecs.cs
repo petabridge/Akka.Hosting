@@ -124,7 +124,7 @@ public class ShardOptionsSpecs
         shardingSettings.TuningParameters.LeastShardAllocationAbsoluteLimit.Should().Be(shardingConfig.GetInt("least-shard-allocation-strategy.rebalance-absolute-limit"));
         shardingSettings.TuningParameters.LeastShardAllocationRelativeLimit.Should().Be(shardingConfig.GetDouble("least-shard-allocation-strategy.rebalance-relative-limit"));
 
-        var singletonConfig = ClusterSingletonManager.DefaultConfig().GetConfig("akka.cluster.singleton");
+        var singletonConfig = ClusterSingleton.DefaultConfig().GetConfig("akka.cluster.singleton");
         shardingSettings.CoordinatorSingletonSettings.SingletonName.Should().Be(singletonConfig.GetString("singleton-name"));
         shardingSettings.CoordinatorSingletonSettings.Role.Should().BeNull();
         // https://github.com/akkadotnet/akka.net/blob/4ae47927da9f2539742c336acfa8ae0037fabbb7/src/contrib/cluster/Akka.Cluster.Tools/Singleton/ClusterSingletonManagerSettings.cs#L58
@@ -241,7 +241,7 @@ public class ShardOptionsSpecs
         shardingSettings.TuningParameters.LeastShardAllocationAbsoluteLimit.Should().Be(shardingConfig.GetInt("least-shard-allocation-strategy.rebalance-absolute-limit"));
         shardingSettings.TuningParameters.LeastShardAllocationRelativeLimit.Should().Be(shardingConfig.GetDouble("least-shard-allocation-strategy.rebalance-relative-limit"));
 
-        var singletonConfig = ClusterSingletonManager.DefaultConfig().GetConfig("akka.cluster.singleton");
+        var singletonConfig = ClusterSingleton.DefaultConfig().GetConfig("akka.cluster.singleton");
         shardingSettings.CoordinatorSingletonSettings.SingletonName.Should().Be(singletonConfig.GetString("singleton-name"));
         shardingSettings.CoordinatorSingletonSettings.Role.Should().BeNull();
         // https://github.com/akkadotnet/akka.net/blob/4ae47927da9f2539742c336acfa8ae0037fabbb7/src/contrib/cluster/Akka.Cluster.Tools/Singleton/ClusterSingletonManagerSettings.cs#L58
@@ -402,7 +402,7 @@ public class ShardOptionsSpecs
         shardingSettings.TuningParameters.LeastShardAllocationAbsoluteLimit.Should().Be(shardingConfig.GetInt("least-shard-allocation-strategy.rebalance-absolute-limit"));
         shardingSettings.TuningParameters.LeastShardAllocationRelativeLimit.Should().Be(shardingConfig.GetDouble("least-shard-allocation-strategy.rebalance-relative-limit"));
 
-        var singletonConfig = ClusterSingletonManager.DefaultConfig().GetConfig("akka.cluster.singleton");
+        var singletonConfig = ClusterSingleton.DefaultConfig().GetConfig("akka.cluster.singleton");
         shardingSettings.CoordinatorSingletonSettings.SingletonName.Should().Be(singletonConfig.GetString("singleton-name"));
         shardingSettings.CoordinatorSingletonSettings.Role.Should().BeNull();
         // https://github.com/akkadotnet/akka.net/blob/4ae47927da9f2539742c336acfa8ae0037fabbb7/src/contrib/cluster/Akka.Cluster.Tools/Singleton/ClusterSingletonManagerSettings.cs#L58
@@ -567,7 +567,7 @@ public class ShardOptionsSpecs
         shardingSettings.TuningParameters.LeastShardAllocationAbsoluteLimit.Should().Be(shardingConfig.GetInt("least-shard-allocation-strategy.rebalance-absolute-limit"));
         shardingSettings.TuningParameters.LeastShardAllocationRelativeLimit.Should().Be(shardingConfig.GetDouble("least-shard-allocation-strategy.rebalance-relative-limit"));
 
-        var singletonConfig = ClusterSingletonManager.DefaultConfig().GetConfig("akka.cluster.singleton");
+        var singletonConfig = ClusterSingleton.DefaultConfig().GetConfig("akka.cluster.singleton");
         shardingSettings.CoordinatorSingletonSettings.SingletonName.Should().Be(singletonConfig.GetString("singleton-name"));
         shardingSettings.CoordinatorSingletonSettings.Role.Should().BeNull();
         // https://github.com/akkadotnet/akka.net/blob/4ae47927da9f2539742c336acfa8ae0037fabbb7/src/contrib/cluster/Akka.Cluster.Tools/Singleton/ClusterSingletonManagerSettings.cs#L58
