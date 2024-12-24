@@ -83,9 +83,18 @@ public class ClusterSingletonSpecs
             // might take multiple tries to resolve the singleton if it hasn't been created yet
             while (DateTime.UtcNow - startTime < timeout)
             {
-                var identify = await singletonSelector.ResolveOne(100.Milliseconds());
-                identify.Should().NotBe(ActorRefs.Nobody);
+                try
+                {
+                    var identify = await singletonSelector.ResolveOne(100.Milliseconds());
+                    identify.Should().NotBe(ActorRefs.Nobody);
+                }
+                catch (Exception)
+                {
+                    // suppress
+                }
             }
+            
+            throw new AskTimeoutException("Failed to resolve singleton within timeout");
         }).Should().NotThrowAsync();
 
         singletonProxy.Path.ToString().Should().Be("akka://TestSys/user/my-singleton-proxy");
