@@ -46,7 +46,17 @@ namespace Akka.Hosting.TestKit.Internals
             var msg = $"{DateTime.Now}:{level}:{_category}:{eventId} {message}";
             if (exception != null)
                 msg += $"\n{exception.GetType()} {exception.Message}\n{exception.StackTrace}";
-            _helper.WriteLine(msg);
+
+            try
+            {
+                
+                _helper.WriteLine(msg);
+            }
+            catch
+            {
+                // no active xUnit test available
+                Console.WriteLine("No active xUnit test available, but logging was attempted. Message: " + msg);
+            }
         }
         
         public bool IsEnabled(LogLevel logLevel)
