@@ -9,8 +9,7 @@ namespace Akka.Hosting.TestKit.Internals
     public class XUnitLogger : Microsoft.Extensions.Logging.ILogger
     {
         public XUnitLogger(string category, Xunit.Abstractions.ITestOutputHelper helper, Microsoft.Extensions.Logging.LogLevel logLevel) { }
-        public System.IDisposable BeginScope<TState>(TState state)
-            where TState :  notnull { }
+        public System.IDisposable BeginScope<TState>(TState state) { }
         public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) { }
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, System.Exception? exception, System.Func<TState, System.Exception?, string> formatter) { }
     }
