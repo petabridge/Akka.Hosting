@@ -1,8 +1,6 @@
 <a id="akkahosting"></a>
 # Akka.Hosting
 
-> This package is now stable.
-
 HOCON-less configuration, application lifecycle management, `ActorSystem` startup, and actor instantiation for [Akka.NET](https://getakka.net/).
 
 See the ["Introduction to Akka.Hosting - HOCON-less, "Pit of Success" Akka.NET Runtime and Configuration" video](https://www.youtube.com/watch?v=Mnb9W9ClnB0) for a walkthrough of the library and how it can save you a tremendous amount of time and trouble.
