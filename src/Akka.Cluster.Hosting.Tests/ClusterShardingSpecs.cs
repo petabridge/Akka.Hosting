@@ -169,7 +169,7 @@ public class ClusterShardingSpecs
     {
         var defaultConfig = ClusterSharding.DefaultConfig()
             .WithFallback(DistributedData.DistributedData.DefaultConfig())
-            .WithFallback(ClusterSingletonManager.DefaultConfig());
+            .WithFallback(ClusterSingleton.DefaultConfig());
         
         var shardingConfig = ConfigurationFactory.ParseString(shardOptions.ToString())
             .WithFallback(defaultConfig.GetConfig("akka.cluster.sharding"));

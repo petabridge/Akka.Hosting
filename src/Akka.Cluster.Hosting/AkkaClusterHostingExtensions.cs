@@ -571,7 +571,7 @@ namespace Akka.Cluster.Hosting
         {
             if (options == null)
                 return builder.AddHocon(ClusterSharding.DefaultConfig()
-                    .WithFallback(ClusterSingletonManager.DefaultConfig())
+                    .WithFallback(ClusterSingleton.DefaultConfig())
                     .WithFallback(DistributedPubSub.DefaultConfig())
                     .WithFallback(ClusterClientReceptionist.DefaultConfig())
                     .WithFallback(DistributedData.DistributedData.DefaultConfig()), HoconAddMode.Append);
@@ -639,7 +639,7 @@ namespace Akka.Cluster.Hosting
 
             // populate all of the possible Clustering default HOCON configurations here
             return builder.AddHocon(ClusterSharding.DefaultConfig()
-                .WithFallback(ClusterSingletonManager.DefaultConfig())
+                .WithFallback(ClusterSingleton.DefaultConfig())
                 .WithFallback(DistributedPubSub.DefaultConfig())
                 .WithFallback(ClusterClientReceptionist.DefaultConfig())
                 .WithFallback(DistributedData.DistributedData.DefaultConfig()), HoconAddMode.Append);
@@ -947,7 +947,7 @@ namespace Akka.Cluster.Hosting
             builder.AddHocon(
                 ClusterSharding.DefaultConfig()
                     .WithFallback(DistributedData.DistributedData.DefaultConfig())
-                    .WithFallback(ClusterSingletonManager.DefaultConfig()), 
+                    .WithFallback(ClusterSingleton.DefaultConfig()), 
                 HoconAddMode.Append);
 
             return builder.StartActors(Resolver);
@@ -1162,7 +1162,7 @@ namespace Akka.Cluster.Hosting
             
             builder
                 .AddHocon(ClusterSharding.DefaultConfig(), HoconAddMode.Append)
-                .AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append)
+                .AddHocon(ClusterSingleton.DefaultConfig(), HoconAddMode.Append)
                 .AddHocon(DistributedData.DistributedData.DefaultConfig(), HoconAddMode.Append);
 
             builder.WithActors((system, registry, resolver) =>
@@ -1386,7 +1386,7 @@ namespace Akka.Cluster.Hosting
             // make sure that default configuration is loaded, not an exhaustive check.
             if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton"))
             {
-                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+                builder.AddHocon(ClusterSingleton.DefaultConfig(), HoconAddMode.Append);
             }
             
             return builder.WithActors((system, registry, resolver) =>
@@ -1578,7 +1578,7 @@ namespace Akka.Cluster.Hosting
             // make sure that default configuration is loaded, not an exhaustive check.
             if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton-proxy"))
             {
-                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+                builder.AddHocon(ClusterSingleton.DefaultConfig(), HoconAddMode.Append);
             }
             
             return builder.WithActors((system, registry) =>
@@ -1635,7 +1635,7 @@ namespace Akka.Cluster.Hosting
             // make sure that default configuration is loaded, not an exhaustive check.
             if (!builder.Configuration.HasValue || builder.Configuration.Value.HasPath("akka.cluster.singleton-proxy"))
             {
-                builder.AddHocon(ClusterSingletonManager.DefaultConfig(), HoconAddMode.Append);
+                builder.AddHocon(ClusterSingleton.DefaultConfig(), HoconAddMode.Append);
             }
             
             return builder.WithActors((system, registry) =>

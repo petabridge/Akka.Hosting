@@ -26,14 +26,14 @@ public class SerilogLoggerEnd2EndSpecs : TestKit.TestKit
     {
         public ConcurrentQueue<Serilog.Events.LogEvent> Writes { get; private set; } = new();
 
-        private readonly ITestOutputHelper _output;
+        private readonly ITestOutputHelper? _output;
         private int _count;
 
         public TestSink() : this(null)
         {
         }
 
-        public TestSink(ITestOutputHelper output)
+        public TestSink(ITestOutputHelper? output)
         {
             _output = output;
         }

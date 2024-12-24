@@ -179,7 +179,7 @@ public class ReceiveTests : TestKit
         try
         {
             await probe.WaitForRadioSilenceAsync(max: TimeSpan.FromMilliseconds(0), maxMessages: 0);
-            Assert.True(false, "we should never get here");
+            Assert.Fail("we should never get here");
         }
         catch (XunitException) { }
     }
