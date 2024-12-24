@@ -4,11 +4,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Akka.NET Microsoft.Extensions.Hosting support.</Description>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Akka.DependencyInjection" Version="$(AkkaVersion)" />
     <PackageReference Include="Akka.Streams" Version="$(AkkaVersion)" />
