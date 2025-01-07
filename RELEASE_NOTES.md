@@ -1,4 +1,3 @@
-#### 1.5.33 December 24th 2024 ####
+#### 1.5.34 January 7th 2025 ####
 
-* [Bump Akka.NET to 1.5.33](https://github.com/akkadotnet/akka.net/releases/tag/1.5.33)
-* Resolved `nullability` issues with Akka.Hosting.TestKit APIs
+* [Bump Akka.NET to 1.5.34](https://github.com/akkadotnet/akka.net/releases/tag/1.5.34)
