@@ -76,7 +76,7 @@ public class TestLogger : ILogger
         return true;
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull
     {
         return EmptyDisposable.Instance;
     }
