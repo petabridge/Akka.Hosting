@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(LibraryFramework)</TargetFramework>
+    <TargetFrameworks>$(LibraryFramework);$(NetLibraryFramework)</TargetFrameworks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Akka.NET Microsoft.Extensions.Hosting support.</Description>
   </PropertyGroup>
