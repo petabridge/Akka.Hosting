@@ -58,7 +58,7 @@ public class XUnitLogger: ILogger
         };
     }
 
-    public IDisposable BeginScope<TState>(TState state) where TState : notnull
+    public IDisposable BeginScope<TState>(TState state)
     {
         throw new NotImplementedException();
     }

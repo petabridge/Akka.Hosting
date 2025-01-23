@@ -146,7 +146,7 @@ public class ClusterOptionsSpec
         var jsonConfig = new ConfigurationBuilder().AddJsonStream(stream).Build();
         
         var clusterOptions = jsonConfig.GetSection("Akka:ClusterOptions").Get<ClusterOptions>();
-        clusterOptions!.SplitBrainResolver = jsonConfig.GetSection("Akka:KeepMajorityOption").Get<KeepMajorityOption>();
+        clusterOptions.SplitBrainResolver = jsonConfig.GetSection("Akka:KeepMajorityOption").Get<KeepMajorityOption>();
         
         var builder = new AkkaConfigurationBuilder(new ServiceCollection(), "")
             .AddHocon(ConfigurationFactory.FromResource("Akka.Cluster.Configuration.Cluster.conf", typeof(Cluster).Assembly), HoconAddMode.Append)

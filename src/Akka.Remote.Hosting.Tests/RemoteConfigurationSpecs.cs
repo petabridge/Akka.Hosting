@@ -498,7 +498,7 @@ public class RemoteConfigurationSpecs
         {
             services.AddAkka("RemoteSys", (builder, provider) =>
             {
-                builder.WithRemoting(remoteOptions!);
+                builder.WithRemoting(remoteOptions);
             });
         }).Build();
 
