@@ -21,7 +21,7 @@ namespace Akka.Hosting
         {
             get
             {
-                _runningInMaui ??= AppDomain.CurrentDomain.GetAssemblies().Any(asm => asm.GetName().Name.StartsWith("Microsoft.Maui"));
+                _runningInMaui ??= AppDomain.CurrentDomain.GetAssemblies().Any(asm => asm?.GetName()?.Name?.StartsWith("Microsoft.Maui") ?? false);
                 return _runningInMaui.Value;
             }
         }

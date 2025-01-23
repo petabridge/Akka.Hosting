@@ -163,14 +163,14 @@ namespace Akka.Hosting
 
         public CancellationTokenRegistration CancellationRegistration { get; set; }
 
-        public bool Equals(WaitForActorRegistration other)
+        public bool Equals(WaitForActorRegistration? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Key == other.Key;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is WaitForActorRegistration other && Equals(other);
         }
@@ -336,11 +336,14 @@ namespace Akka.Hosting
             }
         }
 
-        private static Action<object> CancelWaiter(Type key, CancellationToken ct,
+        private static Action<object?> CancelWaiter(Type key, CancellationToken ct,
             WaitForActorRegistration waitingRegistration)
         {
             return dict =>
             {
+                if (dict is null)
+                    return;
+                
                 // first step during timeout is to remove our registration
                 var d = (ConcurrentDictionary<Type, ImmutableHashSet<WaitForActorRegistration>>)dict;
                 d.AddOrUpdate(key, type => ImmutableHashSet<WaitForActorRegistration>.Empty,

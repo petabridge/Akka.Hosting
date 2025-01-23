@@ -20,6 +20,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LibraryFramework>netstandard2.0</LibraryFramework>
+    <NetLibraryFramework>net6.0</NetLibraryFramework>
     <TestsNetCoreFramework>net8.0</TestsNetCoreFramework>
     <XunitVersion>2.8.1</XunitVersion>
     <TestSdkVersion>17.11.1</TestSdkVersion>

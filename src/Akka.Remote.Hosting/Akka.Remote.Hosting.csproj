@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(LibraryFramework)</TargetFramework>
+    <TargetFrameworks>$(LibraryFramework);$(NetLibraryFramework)</TargetFrameworks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Akka.Remote Microsoft.Extensions.Hosting support.</Description>
     <LangVersion>Latest</LangVersion>
