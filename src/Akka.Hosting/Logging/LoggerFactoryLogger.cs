@@ -62,7 +62,10 @@ namespace Akka.Hosting.Logging
         
         protected virtual void Log(LogEvent log, ActorPath path)
         {
-            _akkaLogger.Log<LogEvent>(GetLogLevel(log.LogLevel()), new EventId(), log, log.Cause, (@event, exception) => @event.ToString());
+            _akkaLogger.Log(GetLogLevel(log.LogLevel()), log.Cause, 
+                "[{Thread:0000}][{LogSource}][{LogClass}][{Message}]", 
+                log.Thread.ManagedThreadId, log.LogSource, log.LogClass, log.Message);
+            // _akkaLogger.Log<LogEvent>(GetLogLevel(log.LogLevel()), log.Cause, log.Message.ToString();
         }
         
         private static LogLevel GetLogLevel(Event.LogLevel level)
