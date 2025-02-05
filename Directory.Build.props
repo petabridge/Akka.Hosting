@@ -3,7 +3,7 @@
     <Copyright>Copyright © 2013-2025 Akka.NET Team</Copyright>
     <Authors>Akka.NET Team</Authors>
     <VersionPrefix>1.5.37.1</VersionPrefix>
-    <PackageReleaseNotes>* Akka.Hosting.TestKit: Fixed issue with `xUnitLogger` throwing `NotImplementedException` when used with scoped logging.</PackageReleaseNotes>
+    <PackageReleaseNotes>* [Akka.Hosting.TestKit: Fixed issue with `xUnitLogger` throwing `NotImplementedException` when used with scoped logging](https://github.com/akkadotnet/Akka.Hosting/pull/570).</PackageReleaseNotes>
     <PackageIcon>akkalogo.png</PackageIcon>
     <PackageProjectUrl>
       https://github.com/akkadotnet/Akka.Hosting
