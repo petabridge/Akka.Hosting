@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Description>TestKit for writing tests for Akka.NET using Akka.Hosting and xUnit.</Description>
-        <TargetFramework>$(LibraryFramework)</TargetFramework>
+        <TargetFrameworks>$(LibraryFramework);$(NetLibraryFramework)</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <IsTestProject>false</IsTestProject>

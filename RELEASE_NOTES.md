@@ -1,3 +1,3 @@
-#### 1.5.34 January 7th 2025 ####
+#### 1.5.37.1 February 5th 2024 ####
 
-* [Bump Akka.NET to 1.5.34](https://github.com/akkadotnet/akka.net/releases/tag/1.5.34)
+* [Akka.Hosting.TestKit: Fixed issue with `xUnitLogger` throwing `NotImplementedException` when used with scoped logging](https://github.com/akkadotnet/Akka.Hosting/pull/570).

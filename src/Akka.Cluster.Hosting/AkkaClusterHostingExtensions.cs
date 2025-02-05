@@ -365,7 +365,7 @@ namespace Akka.Cluster.Hosting
                 sb.AppendLine($"remember-entities = {RememberEntities.ToHocon()}");
             
             if(RememberEntitiesStore is not null)
-                sb.AppendLine($"remember-entities-store = {RememberEntitiesStore.ToString().ToLowerInvariant().ToHocon()}");
+                sb.AppendLine($"remember-entities-store = {RememberEntitiesStore.Value.ToString().ToLowerInvariant().ToHocon()}");
 
             var journalId = JournalOptions?.PluginId ?? JournalPluginId ?? null;
             if (journalId is not null)
@@ -376,7 +376,7 @@ namespace Akka.Cluster.Hosting
                 sb.AppendLine($"snapshot-plugin-id = {snapshotId.ToHocon()}");
 
             if (StateStoreMode is not null)
-                sb.AppendLine($"state-store-mode = {StateStoreMode.ToString().ToLowerInvariant().ToHocon()}");
+                sb.AppendLine($"state-store-mode = {StateStoreMode.Value.ToString().ToLowerInvariant().ToHocon()}");
 
             if (LeaseImplementation is not null)
                 sb.AppendLine($"use-lease = {LeaseImplementation.ConfigPath}");
