@@ -70,7 +70,7 @@ namespace Akka.Hosting.TestKit.Internals
 
         public IDisposable BeginScope<TState>(TState state) 
         {
-            throw new NotImplementedException();
+            return NullScope.Instance;
         }
         
         private static bool TryFormatMessage<TState>(
@@ -90,6 +90,13 @@ namespace Akka.Hosting.TestKit.Internals
             
             result = formattedMessage;
             return true;
+        }
+
+        private class NullScope : IDisposable
+        {
+            private NullScope() { }
+            public static NullScope Instance { get; } = new NullScope();
+            public void Dispose() { }
         }
     }    
 }
