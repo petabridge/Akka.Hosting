@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Akka.TestKit.Xunit2" Version="$(AkkaVersion)" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.2" />
         <PackageReference Include="xunit" Version="$(XunitVersion)" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
         <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
